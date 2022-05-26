@@ -1,39 +1,52 @@
+from PIL import Image
+from matplotlib import pyplot
+import numpy as np
+from math import ceil, sqrt
+
+
 class GAN(object):
-    NEW_GENE_COUNT = 15
+    DIRECTORY = "../img/"
+    NEW_GENE_COUNT = 16  # Number of new genes to generate in each step
 
     def __init__(self):
         """
-        Generate picture by Generative Adversarial Network
+        Generate image by Generative Adversarial Network
         """
-        self.gene = None
 
     @staticmethod
-    def picture_to_gene(picture):
+    def image_to_gene(image):
         """
-        Mapping from a picture to a gene vector
-        :param picture: A file of picture (TODO: Change this description when using with real data)
+        Convert from a face image to a gene vector
+        :param image: An image indicate a face
         :return: A vector indicate a gene
         """
-        # Do something here...
-        gene = None
+        gene = np.asarray(image)
         return gene
 
     @staticmethod
-    def gene_to_picture(gene):
+    def gene_to_image(gene):
         """
-        Mapping from a gene vector to a picture
+        Convert from a gene vector to a face image
         :param gene: A vector indicate a gene
-        :return: A file of picture (TODO: Change this description when using with real data)
+        :return: An image indicate a face
         """
-        # Do something here...
-        picture = None
-        return picture
+        image = Image.fromarray(gene)
+        return image
 
-    def get_input(self):
-        # Do something here...
-        picture = None
-        self.gene = self.picture_to_gene(picture)
-        return self.gene
+    def load_image(self, sub_dir, file_name):
+        # Load image from file
+        image = Image.open(self.DIRECTORY + "/" + sub_dir + "/" + file_name)
+
+        # Convert to RGB, if needed
+        image = image.convert('RGB')
+
+        # Convert to array
+        gene = self.image_to_gene(image)
+        return gene
+
+    def load_file(self):
+        gene = None
+        return gene
 
 
 class DualStyleGAN(GAN):
@@ -42,56 +55,68 @@ class DualStyleGAN(GAN):
         Generate a new portrait by DualStyleGAN
         """
         super().__init__()
-        self.style = None
 
-    def show_picture(self, gene):
-        # Return the picture with the given gene
+    def show_image(self, gene, show_separately=False):
+        """
+        Show image converted from gene
+        :param gene: A gene or a list of genes
+        :param show_separately: Show image directly or by pyplot
+        :return: None
+        """
+        if show_separately:
+            if isinstance(gene, list):  # Case 'gene' is a list of genes
+                for g in gene:
+                    self.gene_to_image(g).show()
+            else:
+                self.gene_to_image(gene).show()
+        else:
+            if isinstance(gene, list):  # Case 'gene' is a list of genes
+                gene_count = len(gene)
+                n = ceil(sqrt(gene_count))  # Length of square to plot images
+
+                # Plot a list of images
+                for i in range(gene_count):
+                    # Define subplot
+                    pyplot.subplot(n, n, 1 + i)
+                    # Turn off axis
+                    pyplot.axis('off')
+                    # Plot raw pixel data
+                    pyplot.imshow(gene[i])
+                pyplot.show()
+            else:
+                pyplot.axis("off")
+                pyplot.imshow(gene)
+                pyplot.show()
+
+    def generate_style(self, gene):
         # Do something here...
-        # Run function gene_to_picture(gene) and show with plt or another library
-        pass
-
-    def show_style(self):
-        # Randomly show some of picture in library
-        # Do something here...
-        style = None  # Gene of the photo which is chosen as style
-        user_choice = False
-        if user_choice:
-            self.style = style
-
-        self.show_picture(style)
+        style = None  # Gene of image from gene + random style
         return style
 
-    def show_color(self):
-        # Show picture of self.gene with random color
+    def generate_color(self, gene):
         # Do something here...
-        color = None  # Gene of picture from self.gene with random color
-        user_choice = False
-        if user_choice:
-            self.gene = color
-
-        self.show_picture(color)
+        color = None  # Gene of image from gene + random color
         return color
-
-    def generate(self):
-        # Generate new gene with chosen style
-        # Do something here...
-
-        self.gene = None
-        return self.gene
 
     def run(self):
         # Step 1: User import photo from their own library
-        gene0 = self.get_input()
-        self.show_picture(gene0)
+        gene0 = self.load_file()
+        self.show_image(gene0)
 
         # Step 2: Choose style
+        styles = []
         for i in range(self.NEW_GENE_COUNT):
-            self.show_style()
-        gene1 = self.generate()
-        self.show_picture(gene1)
+            styles.append(self.generate_style(gene0))
+        self.show_image(styles)
+        index = int(input("You choose style: "))
+        gene1 = styles[index]
+        self.show_image(gene1)
 
         # Step 3: Change color
+        colors = []
         for i in range(self.NEW_GENE_COUNT):
-            self.show_color()
-        gene2 = self.gene
-        self.show_picture(gene2)
+            colors.append(self.generate_color(gene1))
+        self.show_image(colors)
+        index = int(input("You choose color: "))
+        gene2 = colors[index]
+        self.show_image(gene2)
