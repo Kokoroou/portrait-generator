@@ -15,9 +15,12 @@ print(type(gene))
 print(gene)
 
 # Show image by pyplot
+pyplot.figure(num="Test")
 pyplot.axis("off")
 pyplot.imshow(gene)
+# pyplot.ion()
 pyplot.show()
 
+print(3)
 # # Directly show the image
 # img.show()
