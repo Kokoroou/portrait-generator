@@ -4,6 +4,8 @@ from PIL import Image
 from matplotlib import pyplot
 from torchvision.transforms import PILToTensor, ToPILImage
 from torchvision.utils import make_grid
+from tkinter import *
+from tkinter import filedialog
 
 
 class GAN(object):
@@ -47,9 +49,9 @@ class GAN(object):
         return gene
 
     def load_file(self):
-        FILE_NAME = '../img/test/girl.png'
+        filepath = filedialog.askopenfilename(filetypes=(("png files", "*.png"),("all files", "*.*")))
 
-        img = Image.open(FILE_NAME)  # Open file
+        img = Image.open(filename)  # Open file
         img.thumbnail((300, 300))  # Resize image and keep ratio
 
         gene = self.image_to_gene(img)
