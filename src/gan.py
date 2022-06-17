@@ -51,7 +51,7 @@ class GAN(object):
     def load_file(self):
         filepath = filedialog.askopenfilename(filetypes=(("png files", "*.png"),("all files", "*.*")))
 
-        img = Image.open(filename)  # Open file
+        img = Image.open(filepath)  # Open file
         img.thumbnail((300, 300))  # Resize image and keep ratio
 
         gene = self.image_to_gene(img)
