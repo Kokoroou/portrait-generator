@@ -1,8 +1,13 @@
-from PIL import Image
-from matplotlib import pyplot
-import numpy as np
 from math import ceil, sqrt
 
+import torch
+import torchvision
+from PIL import Image
+from matplotlib import pyplot, pyplot as plt
+from torchvision.transforms import PILToTensor, ToPILImage
+from torchvision.utils import make_grid
+from gen_color import gen_color
+from util import visualize
 
 class GAN(object):
     DIRECTORY = "../img/"
@@ -20,7 +25,7 @@ class GAN(object):
         :param image: An image indicate a face
         :return: A vector indicate a gene
         """
-        gene = np.asarray(image)
+        gene = PILToTensor()(image)
         return gene
 
     @staticmethod
@@ -30,7 +35,7 @@ class GAN(object):
         :param gene: A vector indicate a gene
         :return: An image indicate a face
         """
-        image = Image.fromarray(gene)
+        image = ToPILImage()(gene)
         return image
 
     def load_image(self, sub_dir, file_name):
@@ -45,7 +50,12 @@ class GAN(object):
         return gene
 
     def load_file(self):
-        gene = None
+        FILE_NAME = '../img/test/girl.png'
+
+        img = Image.open(FILE_NAME)  # Open file
+        img.thumbnail((300, 300))  # Resize image and keep ratio
+
+        gene = self.image_to_gene(img)
         return gene
 
 
@@ -56,11 +66,12 @@ class DualStyleGAN(GAN):
         """
         super().__init__()
 
-    def show_image(self, gene, show_separately=False):
+    def show_image(self, gene, show_separately=False, window_title="No Title"):
         """
         Show image converted from gene
         :param gene: A gene or a list of genes
         :param show_separately: Show image directly or by pyplot
+        :param window_title: Title of window which show image
         :return: None
         """
         if show_separately:
@@ -70,53 +81,127 @@ class DualStyleGAN(GAN):
             else:
                 self.gene_to_image(gene).show()
         else:
+            # Change title of window
+            pyplot.figure(num=window_title)
+
             if isinstance(gene, list):  # Case 'gene' is a list of genes
                 gene_count = len(gene)
                 n = ceil(sqrt(gene_count))  # Length of square to plot images
 
-                # Plot a list of images
-                for i in range(gene_count):
-                    # Define subplot
-                    pyplot.subplot(n, n, 1 + i)
-                    # Turn off axis
-                    pyplot.axis('off')
-                    # Plot raw pixel data
-                    pyplot.imshow(gene[i])
-                pyplot.show()
-            else:
+                # Make a grid of genes
+                grid = make_grid(gene, n)
+                # Turn off axis
                 pyplot.axis("off")
-                pyplot.imshow(gene)
-                pyplot.show()
+                # Plot raw pixel data
+                pyplot.imshow(grid.permute(1, 2, 0))
+
+            else:
+                # Turn off axis
+                pyplot.axis("off")
+                # Plot raw pixel data
+                pyplot.imshow(gene.permute(1, 2, 0))
+            pyplot.show()
 
     def generate_style(self, gene):
         # Do something here...
-        style = None  # Gene of image from gene + random style
+        style = gene  # Gene of image from gene + random style
         return style
 
-    def generate_color(self, gene):
+    def generate_color(self):
         # Do something here...
-        color = None  # Gene of image from gene + random color
-        return color
+        colors = []  # Gene of image from gene + random color
+        colors += gen_color('../img/test/frontal face.png')
+        return colors
 
     def run(self):
-        # Step 1: User import photo from their own library
-        gene0 = self.load_file()
-        self.show_image(gene0)
-
-        # Step 2: Choose style
+        step = 1  # Variable to control current step
+        gene0, gene1, gene2 = [], [], []
         styles = []
-        for i in range(self.NEW_GENE_COUNT):
-            styles.append(self.generate_style(gene0))
-        self.show_image(styles)
-        index = int(input("You choose style: "))
-        gene1 = styles[index]
-        self.show_image(gene1)
-
-        # Step 3: Change color
         colors = []
-        for i in range(self.NEW_GENE_COUNT):
-            colors.append(self.generate_color(gene1))
-        self.show_image(colors)
-        index = int(input("You choose color: "))
-        gene2 = colors[index]
-        self.show_image(gene2)
+
+        while step:
+            if step == 1:
+                # Step 1: User import photo from their own library
+                if isinstance(gene0, list):
+                    gene0 = self.load_file()
+                self.show_image(gene0, window_title="Photo imported")
+                step += 1
+
+            elif step == 2:
+                # Step 2: Choose style
+                if not styles:
+                    for i in range(self.NEW_GENE_COUNT):
+                        styles.append(self.generate_style(gene0))
+
+                self.show_image(styles, window_title="New styles")
+
+                index = int(input("You choose style: "))
+
+                if index < 0 or index > self.NEW_GENE_COUNT:  # Do not go to next step
+                    if index == -1:  # Go back to previous step
+                        print("Go back to previous step!")
+                        step -= 1
+                    elif index == self.NEW_GENE_COUNT + 1:  # Refresh this step
+                        print("Refresh styles!")
+                        styles = []
+                    elif index < -1 or index > self.NEW_GENE_COUNT + 1:  # Invalid number
+                        print("Invalid style!")
+                else:  # Continue to next step
+                    step += 1
+                    if index == 0:  # Use current style and continue
+                        print("Do not change style!")
+                        gene1 = gene0
+                    else:  # Choose one of given new styles
+                        gene1 = styles[index - 1]
+                        self.show_image(gene1, window_title="Style chosen")
+
+            elif step == 3:
+                # Step 3: Change color
+                if not colors:
+                    #for i in range(self.NEW_GENE_COUNT):
+                        colors=self.generate_color()
+                #self.show_image(colors, window_title="New colors")
+
+                vis = torchvision.utils.make_grid(torch.cat(colors, dim=0), 4, 1)
+                plt.figure(figsize=(10, 10), dpi=120)
+                visualize(vis.cpu())
+                plt.show()
+
+                index = int(input("You choose color: "))
+
+
+
+                if index < 0 or index > self.NEW_GENE_COUNT:  # Do not go to next step
+                    if index == -1:  # Go back to previous step
+                        print("Go back to previous step!")
+                        step -= 1
+                    elif index == self.NEW_GENE_COUNT + 1:  # Refresh this step
+                        print("Refresh colors!")
+                        colors = []
+                    elif index < -1 or index > self.NEW_GENE_COUNT + 1:  # Invalid number
+                        print("Invalid color!")
+                else:  # Continue to next step
+                    color = [colors[index]]
+                    vis = torchvision.utils.make_grid(torch.cat(color, dim=0), 1, 1)
+                    plt.figure(figsize=(10, 10), dpi=40)
+                    visualize(vis.cpu())
+                    plt.show()
+
+                    step += 1
+                    '''if index == 0:  # Use current style and continue
+                        print("Do not change color!")
+                        gene2 = gene1
+                    else:  # Choose one of given new styles
+                        gene2 = colors[index - 1]
+                        self.show_image(gene2, window_title="Final image")'''
+
+            elif step == 4:
+                # Step 4: Save final image
+                user_choice = input("Do you want to save image (Y/N): ")
+                if user_choice == "Y" or user_choice == "y":
+                    file_name = input("File name: ")
+                    self.gene_to_image(gene2).save(file_name + ".png")
+                step = 0
+
+if __name__=='__main__':
+    DualStyleGAN().run()
