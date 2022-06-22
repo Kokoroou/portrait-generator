@@ -4,6 +4,7 @@ from PIL import Image
 from matplotlib import pyplot
 from torchvision.transforms import PILToTensor, ToPILImage
 from torchvision.utils import make_grid
+import torch
 
 
 class GAN(object):
@@ -47,7 +48,7 @@ class GAN(object):
         return gene
 
     def load_file(self):
-        FILE_NAME = '../img/test/girl.png'
+        FILE_NAME = '../../img/test/girl.png'
 
         img = Image.open(FILE_NAME)  # Open file
         img.thumbnail((300, 300))  # Resize image and keep ratio
@@ -71,6 +72,12 @@ class DualStyleGAN(GAN):
         :param window_title: Title of window which show image
         :return: None
         """
+        print(type(gene))
+        if isinstance(gene, torch.Tensor):
+            gene = gene.permute(1, 2, 0)
+            gene = gene.detach()
+            print(gene.size())
+
         if show_separately:
             if isinstance(gene, list):  # Case 'gene' is a list of genes
                 for g in gene:
@@ -85,8 +92,13 @@ class DualStyleGAN(GAN):
                 gene_count = len(gene)
                 n = ceil(sqrt(gene_count))  # Length of square to plot images
 
+                # for g in range(len(gene)):
+                #     gene[g] = gene[g].permute(1, 2, 0)
+                #     gene[g] = gene[g].detach()
+
                 # Make a grid of genes
                 grid = make_grid(gene, n)
+                print(grid.size())
                 # Turn off axis
                 pyplot.axis("off")
                 # Plot raw pixel data
@@ -96,7 +108,7 @@ class DualStyleGAN(GAN):
                 # Turn off axis
                 pyplot.axis("off")
                 # Plot raw pixel data
-                pyplot.imshow(gene.permute(1, 2, 0))
+                pyplot.imshow(gene)
             pyplot.show()
 
     def generate_style(self, gene):
@@ -184,3 +196,7 @@ class DualStyleGAN(GAN):
                     file_name = input("File name: ")
                     self.gene_to_image(gene2).save(file_name + ".png")
                 step = 0
+
+
+if __name__ == "__main__":
+    DualStyleGAN().run()
