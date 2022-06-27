@@ -7,6 +7,7 @@ if __name__ == "__main__":
     # Library for numerical computation with image
     os.system("pip install numpy")
     os.system("pip install tensorflow")
+    os.system("pip install faiss-cpu")
 
     # Library for image processing
     os.system("pip install Pillow")
@@ -16,6 +17,7 @@ if __name__ == "__main__":
 
     # Library for face recognition
     os.system("pip install dlib")
+    os.system("pip install opencv-python")
 
     # Library for download file
     os.system("pip install wget")

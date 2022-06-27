@@ -1,8 +1,8 @@
 from torchvision import transforms
-from model.dualstylegan import DualStyleGAN
+import torch
 
-generator = DualStyleGAN(size=1024, style_dim=512, n_mlp=8, channel_multiplier=2, res_index=6)
-generator.eval()
+MAX_STRUCTURE_CODE = 6
+MAX_COLOR_CODE = 6
 
 
 def gen_color(gene=None, structure_code=0, color_code=0, info={}):
@@ -17,11 +17,14 @@ def gen_color(gene=None, structure_code=0, color_code=0, info={}):
     """
     instyle = info["instyle"]
     exstyle = info["exstyle"]
+    generator = info["generator"]
+    encoder = info["encoder"]
 
-    weight = [structure_code / 5.0] * 7 + [color_code / 5.0] * 11
+    weight = [structure_code / float(MAX_STRUCTURE_CODE)] * 7 + [color_code / float(MAX_COLOR_CODE)] * 11
     # new_gene = generator([instyle], exstyle[0:1], interp_weights=weight,
     #                       z_plus_latent=True, truncation=0.7, truncation_latent=0, use_res=True)
     new_gene = generator(instyle, exstyle, interp_weights=weight,
                          z_plus_latent=True, truncation=0.7, truncation_latent=0, use_res=True)
+    new_gene = torch.clamp(new_gene.detach(), -1, 1)[1]
 
     return new_gene
