@@ -14,14 +14,14 @@ img.thumbnail((400, 400))  # Resize image and keep ratio
 # Gene type: pytorch.tensor
 gene1 = transforms.PILToTensor()(img).permute(1, 2, 0)
 print(type(gene1))
-print(gene1)
+print(gene1.size())
 
 print()
 
 # Gene type: numpy.ndarray
 gene2 = np.asarray(img)
 print(type(gene2))
-print(gene2)
+print(gene2.shape)
 
 # Show image by pyplot
 pyplot.figure(num="Test")

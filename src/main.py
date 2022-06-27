@@ -1,4 +1,4 @@
-from gan import *
+import os
 
-# Start
-running = DualStyleGAN().run()
+if __name__ == "__main__":
+    os.system("streamlit run .\\view\\1_Home.py")
