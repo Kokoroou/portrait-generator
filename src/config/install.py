@@ -15,12 +15,12 @@ if __name__ == "__main__":
     # Library for plotting image
     os.system("pip install matplotlib")
 
-    # Library for face recognition
-    os.system("pip install dlib")
-    os.system("pip install opencv-python")
-
     # Library for download file
     os.system("pip install wget")
 
     # Library for make web app
     os.system("pip install streamlit")
+
+    # Library for face recognition
+    os.system("pip install dlib")
+    os.system("pip install opencv-python")

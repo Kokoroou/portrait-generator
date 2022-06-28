@@ -1,13 +1,31 @@
+👉	[Tiếng Việt](https://github.com/Kokoroou/portrait-generator/blob/main/README_vi.md)
 # Portrait Generator
 
 ## Introduction
-Generate new portrait from real face and picture face by Dual Style GAN
+Generate new artistic portrait from real face by Dual Style GAN
 
 ## Key features
-None at the moment
+- [x] Choose style for new image
+- [x] Modify structure and color of new image
+- [ ] Customize style image
 
-## How to use
-Cannot use at the moment
+## Requirement
+Installed python 3.9 and pip
+
+## Setup
+1. Clone [this repository](https://github.com/Kokoroou/portrait-generator)
+2. Download folder [checkpoint](https://drive.google.com/drive/folders/1rAiKfCO_fcQsbnPDu04DgJ_iATdIQLHz?usp=sharing)
+and save in main folder which was just cloned
+3. Run file `install.py` in directory **src/config/**
+4. Run file `main.py` in directory **src/**
+
+## Usage
+1. On popped-up web, change to tab **Generator**
+2. Upload your photo
+3. Choose your favorite style (Default is **Random**)
+4. Modify structure and color rate
+5. Wait for system to create new image
+6. Save image to your device
 
 ## Credit
 Member of team:
