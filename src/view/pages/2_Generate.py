@@ -21,7 +21,7 @@ if image_file is not None:
     # Step 2: Modify parameter for generator
     expander2 = st.expander("Choose style", expanded=True)
     style = expander2.selectbox(label="Style", options=["Random"] + [style_name.capitalize() for style_name in styles],
-                                index=6)
+                                index=0)
     structure_rate = expander2.slider(label="Structure", min_value=0.0, max_value=1.0, value=0.5, step=0.25)
     color_rate = expander2.slider(label="Color", min_value=0.0, max_value=1.0, value=0.0, step=0.25)
 
