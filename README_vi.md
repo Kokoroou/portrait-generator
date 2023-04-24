@@ -13,7 +13,7 @@ Tạo bức vẽ chân dung nghệ thuật mới từ khuôn mặt thật bằng
 
 ## Cài đặt
 1. Clone [repository này](https://github.com/Kokoroou/portrait-generator)
-2. Tải thư mục [checkpoint](https://drive.google.com/drive/folders/1rAiKfCO_fcQsbnPDu04DgJ_iATdIQLHz?usp=sharing)
+2. Tải thư mục [checkpoint](https://github.com/williamyang1991/DualStyleGAN#pretrained-models)
 và lưu trong thư mục vừa clone
 3. Chạy file `install.py` trong đường dẫn **src/config/**
 4. Chạy file `main.py` trong đường dẫn **src/**
