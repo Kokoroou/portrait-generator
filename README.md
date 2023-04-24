@@ -14,7 +14,7 @@ Installed python 3.9 and pip
 
 ## Setup
 1. Clone [this repository](https://github.com/Kokoroou/portrait-generator)
-2. Download folder [checkpoint](https://drive.google.com/drive/folders/1rAiKfCO_fcQsbnPDu04DgJ_iATdIQLHz?usp=sharing)
+2. Download folder [checkpoint](https://github.com/williamyang1991/DualStyleGAN#:~:text=Pretrained%20models%20can%20be%20downloaded%20from%20Google%20Drive%20or%20Baidu%20Cloud%20(access%20code%3A%20cvpr)%3A)
 and save in main folder which was just cloned
 3. Run file `install.py` in directory **src/config/**
 4. Run file `main.py` in directory **src/**
